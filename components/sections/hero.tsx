@@ -146,7 +146,7 @@ export const HeroSection: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-lg md:text-xl text-slate-400 max-w-2xl mb-4 leading-relaxed"
+          className="text-lg md:text-xl text-slate-400 max-w-2xl mb-8 leading-relaxed"
         >
           Describe your project. Our AI scopes it. Verified GHL admins build it.
           <br className="hidden md:block" />

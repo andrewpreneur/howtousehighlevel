@@ -45,7 +45,7 @@ export const CTASection: React.FC = () => {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-xs font-semibold tracking-widest text-cyan-400 uppercase mb-6 block">
+          <span className="text-xs font-semibold tracking-widest text-cyan-400 uppercase mb-4 block">
             Get Started
           </span>
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-none">

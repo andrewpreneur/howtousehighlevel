@@ -143,7 +143,7 @@ export const TestimonialsSection: React.FC = () => {
           onMouseLeave={() => setIsPaused(false)}
         >
           <motion.div
-            animate={{ x: isPaused ? "0%" : "0%" }}
+            animate={{ x: isPaused ? "-50%" : "0%" }}
             initial={{ x: "-50%" }}
             transition={{
               duration: 35,
