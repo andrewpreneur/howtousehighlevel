@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background"
 import { LiquidButton } from "@/components/ui/liquid-glass-button"
 
@@ -44,6 +44,14 @@ const STRUGGLES = [
 
 export default function DemoOne() {
   const [popupOpen, setPopupOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
@@ -60,8 +68,8 @@ export default function DemoOne() {
         ]}
         gradientStops={[35, 50, 60, 70, 80, 90, 100]}
         Breathing={true}
-        startingGap={125}
-        breathingRange={8}
+        startingGap={isMobile ? 70 : 125}
+        breathingRange={isMobile ? 4 : 8}
         animationSpeed={0.015}
       />
 
@@ -129,8 +137,8 @@ export default function DemoOne() {
         {/* ── SOCIAL PROOF ── */}
         <div className="w-full max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="border border-white/15 rounded-2xl bg-black/30 backdrop-blur-sm px-5 sm:px-8 py-6 text-center">
-            <p className="text-4xl sm:text-5xl font-extrabold text-white mb-1">700+</p>
-            <p className="text-white/50 text-xs sm:text-sm mb-4">Business owners already using these tools to grow faster</p>
+            <p className="text-white text-xl sm:text-2xl font-extrabold tracking-tight mb-1">Business owners already using these tools to grow faster</p>
+            <p className="text-white/40 text-xs sm:text-sm mb-4">Trusted by 700+ users and counting</p>
             <div className="flex flex-wrap justify-center gap-2">
               {["Coaches", "Consultants", "Agency Owners", "Freelancers", "Founders", "Side Hustlers"].map((label) => (
                 <span
