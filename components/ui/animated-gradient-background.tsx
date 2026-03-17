@@ -54,11 +54,17 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> = ({
       if (!Breathing) directionWidth = 0;
       width += directionWidth * animationSpeed;
 
-      const gradientStopsString = gradientStops
+      const mobile = window.innerWidth < 640;
+      // On mobile the ellipse is much larger relative to the viewport, so bright
+      // colors would sit outside the visible area if we used desktop stops.
+      // Compress the stops so colour appears at a smaller fraction of the radius.
+      const activeStops = mobile
+        ? gradientStops.map(s => Math.round(s * 0.45))
+        : gradientStops;
+      const gradientStopsString = activeStops
         .map((stop, index) => `${gradientColors[index]} ${stop}%`)
         .join(", ");
 
-      const mobile = window.innerWidth < 640;
       const rx = mobile ? width * 1.4 : width;
       const ry = mobile ? width * 2.0 : width + topOffset;
       const gradient = `radial-gradient(${rx}% ${ry}% at 50% 20%, ${gradientStopsString})`;
