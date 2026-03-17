@@ -58,7 +58,10 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> = ({
         .map((stop, index) => `${gradientColors[index]} ${stop}%`)
         .join(", ");
 
-      const gradient = `radial-gradient(${width}% ${width + topOffset}% at 50% 20%, ${gradientStopsString})`;
+      const mobile = window.innerWidth < 640;
+      const rx = mobile ? width * 1.4 : width;
+      const ry = mobile ? width * 2.0 : width + topOffset;
+      const gradient = `radial-gradient(${rx}% ${ry}% at 50% 20%, ${gradientStopsString})`;
 
       if (containerRef.current) {
         containerRef.current.style.background = gradient;
