@@ -34,7 +34,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        {/* GHL form embed script */}
+        <script src="https://link.saassuite.ai/js/form_embed.js" async />
+      </body>
     </html>
   );
 }

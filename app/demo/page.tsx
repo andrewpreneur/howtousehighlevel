@@ -89,10 +89,24 @@ export default function DemoOne() {
             <p className="text-xs uppercase tracking-widest text-purple-400 mb-2 font-semibold">Free Workshop</p>
             <h3 className="mb-1 text-xl font-bold text-white leading-snug">Reserve Your Spot</h3>
             <p className="mb-6 text-sm text-white/50">Seats are limited — register now to save your place.</p>
-            {/* Drop your registration widget here */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-white/30 text-sm italic">
-              [ Paste your registration widget here ]
-            </div>
+            {/* Registration widget */}
+            <iframe
+              src="https://link.saassuite.ai/widget/form/C5MdGJTp3gwF7vVLSrrA"
+              style={{ width: '100%', height: '354px', border: 'none', borderRadius: '3px' }}
+              id="inline-C5MdGJTp3gwF7vVLSrrA"
+              data-layout="{'id':'INLINE'}"
+              data-trigger-type="alwaysShow"
+              data-trigger-value=""
+              data-activation-type="alwaysActivated"
+              data-activation-value=""
+              data-deactivation-type="neverDeactivate"
+              data-deactivation-value=""
+              data-form-name="Form 46"
+              data-height="354"
+              data-layout-iframe-id="inline-C5MdGJTp3gwF7vVLSrrA"
+              data-form-id="C5MdGJTp3gwF7vVLSrrA"
+              title="Form 46"
+            />
           </div>
         </div>
       )}
