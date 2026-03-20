@@ -89,37 +89,35 @@
       font-size: clamp(2rem, 8vw, 4.5rem);
       font-weight: 900;
       letter-spacing: -0.02em;
-      line-height: 1.05;
+      line-height: 1.15;
       margin-bottom: 8px;
     }
 
-    /* Word-swap container */
+    /* Word-swap container — fixed height, words fade in/out on top of each other */
     .word-wrap {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      height: 1.1em;
-      vertical-align: bottom;
-      min-width: 260px;       /* prevents layout shift */
-    }
-
-    .word-track {
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .word-track span {
+      position: relative;
       display: block;
-      height: 1.1em;
-      line-height: 1.1em;
+      height: 1.15em;
+      overflow: visible;
+    }
+
+    .word-wrap .word {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      white-space: nowrap;
       background: linear-gradient(90deg, #fbbf24, #f472b6, #818cf8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      white-space: nowrap;
-      padding: 0 4px;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+
+    .word-wrap .word.active {
+      opacity: 1;
     }
 
     /* ── Subheadline ── */
@@ -212,7 +210,6 @@
     @media (max-width: 480px) {
       nav { padding: 16px 20px; }
       .hero { padding: 32px 16px 24px; }
-      .word-wrap { min-width: 200px; }
     }
   </style>
 </head>
@@ -237,12 +234,10 @@
       <div class="badge">Coming Soon</div>
 
       <h1>
-        Great things are<br>
-        <span class="word-wrap">
-          <div class="word-track" id="wordTrack">
-            <!-- words injected by JS -->
-          </div>
-        </span>
+        Great things are
+        <div class="word-wrap" id="wordWrap">
+          <!-- words injected by JS -->
+        </div>
       </h1>
 
       <p class="sub">Join our waitlist and get access to our on demand training.</p>
@@ -315,45 +310,28 @@
       });
     })();
 
-    /* ── Rolling word swapper ── */
+    /* ── Fade word swapper ── */
     (function () {
       const words = ['ideating', 'developing', 'launching', 'monetizing'];
-      const track = document.getElementById('wordTrack');
+      const wrap = document.getElementById('wordWrap');
 
-      // Build the DOM: words × 2 so the loop wraps seamlessly
-      const allWords = [...words, ...words];
-      allWords.forEach(w => {
-        const span = document.createElement('span');
-        span.textContent = w;
-        track.appendChild(span);
+      // Create one element per word, all stacked
+      const els = words.map(w => {
+        const el = document.createElement('span');
+        el.className = 'word';
+        el.textContent = w;
+        wrap.appendChild(el);
+        return el;
       });
 
-      let index = 0;
-      const ITEM_HEIGHT_EM = 1.1; // matches CSS height
+      let current = 0;
+      els[current].classList.add('active');
 
-      function getItemPx() {
-        // Get the actual pixel height of one word slot
-        const firstSpan = track.querySelector('span');
-        return firstSpan ? firstSpan.getBoundingClientRect().height : 48;
-      }
-
-      function step() {
-        index++;
-        const px = getItemPx();
-        track.style.transition = 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
-        track.style.transform = `translateY(-${index * px}px)`;
-
-        // When we've shown all original words once, snap back silently
-        if (index >= words.length) {
-          setTimeout(() => {
-            track.style.transition = 'none';
-            track.style.transform = 'translateY(0)';
-            index = 0;
-          }, 500);
-        }
-      }
-
-      setInterval(step, 2000);
+      setInterval(() => {
+        els[current].classList.remove('active');
+        current = (current + 1) % words.length;
+        els[current].classList.add('active');
+      }, 2000);
     })();
   </script>
 
