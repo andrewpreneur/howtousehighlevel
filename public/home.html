@@ -54,9 +54,11 @@
       height: 48px;
       border-radius: 12px;
       object-fit: contain;
-      transition: opacity 0.2s;
+      opacity: 0;
+      transition: opacity 0.6s ease;
     }
-    nav img:hover { opacity: 0.8; }
+    nav img.revealed       { opacity: 1; }
+    nav img.revealed:hover { opacity: 0.8; }
 
     /* ── Hero ── */
     .hero {
@@ -129,11 +131,36 @@
       line-height: 1.6;
     }
 
+    /* ── Blur-word animation ── */
+    @keyframes blurFadeIn {
+      from {
+        opacity: 0;
+        filter: blur(10px);
+        transform: translateY(3px);
+      }
+      to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    .blur-word {
+      display: inline-block;
+      opacity: 0;
+    }
+
+    .blur-word.revealed {
+      animation: blurFadeIn 0.55s ease forwards;
+    }
+
     /* ── Form embed ── */
     .form-wrap {
+      position: relative;
       margin-top: 36px;
       width: 100%;
       max-width: 480px;
+      min-height: 300px;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.08);
@@ -148,6 +175,22 @@
       height: 284px;
       border: none;
       border-radius: 5px;
+    }
+
+    /* ── Form overlay ── */
+    .form-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: #0A0A0A;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.9s ease;
+    }
+
+    .form-overlay.hidden {
+      opacity: 0;
     }
 
     /* ── Footer ── */
@@ -224,25 +267,26 @@
     <!-- Nav: logo top-right -->
     <nav>
       <a href="https://saassuite.com" target="_blank" rel="noopener">
-        <img src="https://assets.cdn.filesafe.space/T69cI1milcirIORef4Ib/media/69bd8c030e1bdb7864856aac.png" alt="SaaS Suite" />
+        <img id="nav-logo" src="https://assets.cdn.filesafe.space/T69cI1milcirIORef4Ib/media/69bd8c030e1bdb7864856aac.png" alt="SaaS Suite" />
       </a>
     </nav>
 
     <!-- Hero -->
     <main class="hero">
 
-      <div class="badge">Coming Soon</div>
+      <div class="badge" id="badge">Coming Soon</div>
 
       <h1>
-        Great things are
+        <span id="h1-static">Great things are</span>
         <div class="word-wrap" id="wordWrap">
           <!-- words injected by JS -->
         </div>
       </h1>
 
-      <p class="sub">Join our waitlist and get access to our on demand training.</p>
+      <p class="sub" id="sub-text">Join our waitlist and get access to our on demand training.</p>
 
       <div class="form-wrap">
+        <div class="form-overlay" id="form-overlay"></div>
         <iframe
           src="https://link.saassuite.ai/widget/form/C5MdGJTp3gwF7vVLSrrA"
           id="inline-C5MdGJTp3gwF7vVLSrrA"
@@ -266,12 +310,12 @@
     <!-- Footer -->
     <footer>
       <div class="footer-bottom">
-        <p>© 2025 SaaSSuite.com · All rights reserved</p>
+        <p id="footer-copy">© 2025 SaaSSuite.com · All rights reserved</p>
         <span class="status-dot">
           <span class="dot"></span>
-          <span>All systems operational</span>
+          <span id="footer-status">All systems operational</span>
         </span>
-        <p>Powered by SaaS Suite</p>
+        <p id="footer-powered">Powered by SaaS Suite</p>
       </div>
     </footer>
 
@@ -310,12 +354,62 @@
       });
     })();
 
+    /* ── Word-by-word blur-fade animation ── */
+    (function () {
+      // Split an element's text into individual .blur-word spans
+      function splitToWords(el) {
+        const text = el.textContent.trim();
+        const words = text.split(/\s+/);
+        el.textContent = '';
+        return words.map((word, i) => {
+          const span = document.createElement('span');
+          span.className = 'blur-word';
+          span.textContent = word;
+          el.appendChild(span);
+          if (i < words.length - 1) {
+            el.appendChild(document.createTextNode(' '));
+          }
+          return span;
+        });
+      }
+
+      // Reveal word spans with staggered delay starting at baseDelay ms
+      function revealWords(spans, baseDelay, stagger) {
+        spans.forEach((span, i) => {
+          setTimeout(() => span.classList.add('revealed'), baseDelay + i * stagger);
+        });
+      }
+
+      // ── Logo ──
+      setTimeout(() => {
+        document.getElementById('nav-logo').classList.add('revealed');
+      }, 200);
+
+      // ── Badge ──
+      revealWords(splitToWords(document.getElementById('badge')), 350, 120);
+
+      // ── H1 "Great things are" ──
+      revealWords(splitToWords(document.getElementById('h1-static')), 550, 130);
+
+      // ── Sub text ──
+      revealWords(splitToWords(document.getElementById('sub-text')), 950, 70);
+
+      // ── Footer ──
+      revealWords(splitToWords(document.getElementById('footer-copy')), 1400, 60);
+      revealWords(splitToWords(document.getElementById('footer-status')), 1600, 80);
+      revealWords(splitToWords(document.getElementById('footer-powered')), 1750, 80);
+
+      // ── Form overlay: start at full size, fade out after 1s ──
+      setTimeout(() => {
+        document.getElementById('form-overlay').classList.add('hidden');
+      }, 1000);
+    })();
+
     /* ── Fade word swapper ── */
     (function () {
       const words = ['ideating...', 'developing...', 'launching...', 'monetizing...'];
       const wrap = document.getElementById('wordWrap');
 
-      // Create one element per word, all stacked
       const els = words.map(w => {
         const el = document.createElement('span');
         el.className = 'word';
@@ -325,13 +419,15 @@
       });
 
       let current = 0;
-      els[current].classList.add('active');
-
-      setInterval(() => {
-        els[current].classList.remove('active');
-        current = (current + 1) % words.length;
+      // Start first word after h1 has animated in
+      setTimeout(() => {
         els[current].classList.add('active');
-      }, 2000);
+        setInterval(() => {
+          els[current].classList.remove('active');
+          current = (current + 1) % words.length;
+          els[current].classList.add('active');
+        }, 2000);
+      }, 950);
     })();
   </script>
 
