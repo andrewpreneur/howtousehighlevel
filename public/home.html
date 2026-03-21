@@ -95,31 +95,37 @@
       margin-bottom: 8px;
     }
 
-    /* Word-swap container — fixed height, words fade in/out on top of each other */
+    /* Word-swap container — rolling animation */
     .word-wrap {
       position: relative;
       display: block;
       height: 1.15em;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .word-wrap .word {
       position: absolute;
       left: 50%;
       top: 0;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(110%);
       white-space: nowrap;
       background: linear-gradient(90deg, #fbbf24, #f472b6, #818cf8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       opacity: 0;
-      transition: opacity 0.6s ease;
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
       pointer-events: none;
     }
 
     .word-wrap .word.active {
+      transform: translateX(-50%) translateY(0);
       opacity: 1;
+    }
+
+    .word-wrap .word.exited {
+      transform: translateX(-50%) translateY(-110%);
+      opacity: 0;
     }
 
     /* ── Subheadline ── */
@@ -405,7 +411,7 @@
       }, 1000);
     })();
 
-    /* ── Fade word swapper ── */
+    /* ── Rolling word swapper ── */
     (function () {
       const words = ['ideating...', 'developing...', 'launching...', 'monetizing...'];
       const wrap = document.getElementById('wordWrap');
@@ -423,8 +429,13 @@
       setTimeout(() => {
         els[current].classList.add('active');
         setInterval(() => {
-          els[current].classList.remove('active');
+          const prev = current;
+          els[prev].classList.remove('active');
+          els[prev].classList.add('exited');
           current = (current + 1) % words.length;
+          // Reset word to bottom if it previously exited off the top
+          els[current].classList.remove('exited');
+          void els[current].offsetWidth; // force reflow so transition fires
           els[current].classList.add('active');
         }, 2000);
       }, 950);
