@@ -160,43 +160,52 @@
       animation: blurFadeIn 0.55s ease forwards;
     }
 
-    /* ── Form embed ── */
-    .form-wrap {
-      position: relative;
-      margin-top: 36px;
-      width: 100%;
-      max-width: 480px;
-      min-height: 300px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    /* ── CTA Buttons ── */
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .form-wrap iframe {
-      display: block;
-      width: 100%;
-      height: 284px;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    /* Sign Up — solid gradient fill */
+    .btn-signup {
+      background: linear-gradient(135deg, #2979FF 0%, #3D5AFE 100%);
+      color: #fff;
       border: none;
-      border-radius: 5px;
+      box-shadow: 0 4px 24px rgba(41, 121, 255, 0.35);
     }
+    .btn-signup:hover { box-shadow: 0 8px 32px rgba(41, 121, 255, 0.5); }
 
-    /* ── Form overlay ── */
-    .form-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      background: #0A0A0A;
-      z-index: 10;
-      pointer-events: none;
-      opacity: 1;
-      transition: opacity 0.9s ease;
+    /* Login — ghost / outline style */
+    .btn-login {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-
-    .form-overlay.hidden {
-      opacity: 0;
+    .btn-login:hover {
+      background: rgba(255,255,255,0.11);
+      border-color: rgba(255,255,255,0.3);
     }
 
     /* ── Footer ── */
@@ -291,24 +300,13 @@
 
       <p class="sub" id="sub-text">Join our waitlist and get access to our on demand training.</p>
 
-      <div class="form-wrap">
-        <div class="form-overlay" id="form-overlay"></div>
-        <iframe
-          src="https://link.saassuite.ai/widget/form/C5MdGJTp3gwF7vVLSrrA"
-          id="inline-C5MdGJTp3gwF7vVLSrrA"
-          data-layout="{'id':'INLINE'}"
-          data-trigger-type="alwaysShow"
-          data-trigger-value=""
-          data-activation-type="alwaysActivated"
-          data-activation-value=""
-          data-deactivation-type="neverDeactivate"
-          data-deactivation-value=""
-          data-form-name="Basic Opt in line"
-          data-height="284"
-          data-layout-iframe-id="inline-C5MdGJTp3gwF7vVLSrrA"
-          data-form-id="C5MdGJTp3gwF7vVLSrrA"
-          title="Basic Opt in line"
-        ></iframe>
+      <div class="cta-row" id="cta-row">
+        <a class="btn btn-signup" href="https://app.saassuite.com/" target="_blank" rel="noopener">
+          Sign Up
+        </a>
+        <a class="btn btn-login" href="https://app.saassuite.com/dashboard" target="_blank" rel="noopener">
+          Login
+        </a>
       </div>
 
     </main>
@@ -326,9 +324,6 @@
     </footer>
 
   </div>
-
-  <!-- GHL form embed script -->
-  <script src="https://link.saassuite.ai/js/form_embed.js"></script>
 
   <script>
     /* ── Animated gradient background ── */
@@ -405,10 +400,16 @@
       revealWords(splitToWords(document.getElementById('footer-status')), 1600, 80);
       revealWords(splitToWords(document.getElementById('footer-powered')), 1750, 80);
 
-      // ── Form overlay: start at full size, fade out after 1s ──
+      // ── CTA buttons: blur-fade in after sub text ──
       setTimeout(() => {
-        document.getElementById('form-overlay').classList.add('hidden');
-      }, 1000);
+        document.getElementById('cta-row').querySelectorAll('.btn').forEach((btn, i) => {
+          btn.style.opacity = '0';
+          setTimeout(() => {
+            btn.style.transition = 'opacity 0.5s ease, transform 0.18s ease, box-shadow 0.18s ease';
+            btn.style.opacity = '1';
+          }, i * 120);
+        });
+      }, 1100);
     })();
 
     /* ── Rolling word swapper ── */
