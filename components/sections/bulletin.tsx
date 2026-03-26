@@ -231,7 +231,7 @@ export const BulletinSection: React.FC = () => {
                       {project.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="flex items-center gap-1 text-xs text-slate-500 bg-white/5 px-2 py-0.5 rounded-full"
+                          className="flex items-center gap-1 text-xs text-slate-500 bg-white/5 px-2 py-1 rounded-full"
                         >
                           <Tag className="w-2.5 h-2.5" />
                           {tag}
