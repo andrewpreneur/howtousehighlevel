@@ -154,45 +154,6 @@
       animation: blurFadeIn 0.55s ease forwards;
     }
 
-    /* ── Form embed ── */
-    .form-wrap {
-      position: relative;
-      margin-top: 36px;
-      width: 100%;
-      max-width: 480px;
-      min-height: 300px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .form-wrap iframe {
-      display: block;
-      width: 100%;
-      height: 284px;
-      border: none;
-      border-radius: 5px;
-    }
-
-    /* ── Form overlay ── */
-    .form-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      background: #0A0A0A;
-      z-index: 10;
-      pointer-events: none;
-      opacity: 1;
-      transition: opacity 0.9s ease;
-    }
-
-    .form-overlay.hidden {
-      opacity: 0;
-    }
-
     /* ── Footer ── */
     footer {
       position: relative;
@@ -266,7 +227,7 @@
 
     <!-- Nav: logo top-right -->
     <nav>
-      <a href="https://saassuite.com" target="_blank" rel="noopener">
+      <a href="https://app.saassuite.com" target="_blank" rel="noopener">
         <img id="nav-logo" src="https://assets.cdn.filesafe.space/T69cI1milcirIORef4Ib/media/69bd8c030e1bdb7864856aac.png" alt="SaaS Suite" />
       </a>
     </nav>
@@ -283,27 +244,7 @@
         </div>
       </h1>
 
-      <p class="sub" id="sub-text">Join our waitlist and get access to our on demand training.</p>
-
-      <div class="form-wrap">
-        <div class="form-overlay" id="form-overlay"></div>
-        <iframe
-          src="https://link.saassuite.ai/widget/form/C5MdGJTp3gwF7vVLSrrA"
-          id="inline-C5MdGJTp3gwF7vVLSrrA"
-          data-layout="{'id':'INLINE'}"
-          data-trigger-type="alwaysShow"
-          data-trigger-value=""
-          data-activation-type="alwaysActivated"
-          data-activation-value=""
-          data-deactivation-type="neverDeactivate"
-          data-deactivation-value=""
-          data-form-name="Basic Opt in line"
-          data-height="284"
-          data-layout-iframe-id="inline-C5MdGJTp3gwF7vVLSrrA"
-          data-form-id="C5MdGJTp3gwF7vVLSrrA"
-          title="Basic Opt in line"
-        ></iframe>
-      </div>
+      <p class="sub" id="sub-text">Get exclusive access to everything you need to build, market, and sell, your SaaS.</p>
 
     </main>
 
@@ -321,39 +262,53 @@
 
   </div>
 
-  <!-- GHL form embed script -->
-  <script src="https://link.saassuite.ai/js/form_embed.js"></script>
-
   <script>
     /* ── Animated gradient background ── */
-    (function () {
-      const el = document.getElementById('bg-canvas');
-      const gradientColors = [
-        '#0A0A0A', '#2979FF', '#FF80AB', '#FF6D00', '#FFD600', '#00E676', '#3D5AFE'
-      ];
-      const gradientStops = [35, 50, 60, 70, 80, 90, 100];
-      let width = 125;
+(function() {
+  var el = document.getElementById('bg-canvas');
+  if (!el) return;
 
-      function animate() {
-        const mobile = window.innerWidth < 640;
-        const activeStops = mobile
-          ? gradientStops.map(s => Math.round(s * 0.45))
-          : gradientStops;
-        const stopsStr = activeStops.map((s, i) => `${gradientColors[i]} ${s}%`).join(', ');
-        const rx = mobile ? width * 1.4 : width;
-        const ry = mobile ? width * 2.0 : width;
-        el.style.background = `radial-gradient(${rx}% ${ry}% at 50% 20%, ${stopsStr})`;
-        requestAnimationFrame(animate);
-      }
+  var colors = ["#0A0A0A", "#2979FF", "#FF80AB", "#FF6D00", "#FFD600", "#00E676", "#3D5AFE"];
+  var stops  = [35, 50, 60, 70, 80, 90, 100];
+  var speed  = 0.015;
+  var startW = 125;
+  var range  = 8;
 
-      requestAnimationFrame(animate);
+  var width = startW;
+  var dir   = 1;
 
-      // Fade in after first paint
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => { el.classList.add('visible'); });
-      });
-    })();
+  function buildGradient(w) {
+    var mobile = window.innerWidth < 640;
+    var rx = mobile ? w * 1.1 : w;
+    var ry = mobile ? w * 1.1 : w;
 
+    var stopsStr = stops.map(function(stop, i) {
+      return colors[i] + ' ' + stop + '%';
+    }).join(', ');
+
+    return 'radial-gradient(' + rx + '% ' + ry + '% at 50% 20%, ' + stopsStr + ')';
+  }
+
+  function paint() {
+    el.style.background = buildGradient(width);
+  }
+
+  function animate() {
+    if (width >= startW + range) dir = -1;
+    if (width <= startW - range) dir = 1;
+    width += dir * speed;
+    paint();
+    requestAnimationFrame(animate);
+  }
+
+  paint();
+
+  setTimeout(function() {
+    el.classList.add('visible');
+  }, 80);
+
+  requestAnimationFrame(animate);
+})();
     /* ── Word-by-word blur-fade animation ── */
     (function () {
       // Split an element's text into individual .blur-word spans
@@ -398,11 +353,6 @@
       revealWords(splitToWords(document.getElementById('footer-copy')), 1400, 60);
       revealWords(splitToWords(document.getElementById('footer-status')), 1600, 80);
       revealWords(splitToWords(document.getElementById('footer-powered')), 1750, 80);
-
-      // ── Form overlay: start at full size, fade out after 1s ──
-      setTimeout(() => {
-        document.getElementById('form-overlay').classList.add('hidden');
-      }, 1000);
     })();
 
     /* ── Fade word swapper ── */
