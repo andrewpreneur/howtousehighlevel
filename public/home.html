@@ -95,37 +95,31 @@
       margin-bottom: 8px;
     }
 
-    /* Word-swap container — rolling animation */
+    /* Word-swap container — fixed height, words fade in/out on top of each other */
     .word-wrap {
       position: relative;
       display: block;
       height: 1.15em;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .word-wrap .word {
       position: absolute;
       left: 50%;
       top: 0;
-      transform: translateX(-50%) translateY(110%);
+      transform: translateX(-50%);
       white-space: nowrap;
       background: linear-gradient(90deg, #fbbf24, #f472b6, #818cf8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       opacity: 0;
-      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+      transition: opacity 0.6s ease;
       pointer-events: none;
     }
 
     .word-wrap .word.active {
-      transform: translateX(-50%) translateY(0);
       opacity: 1;
-    }
-
-    .word-wrap .word.exited {
-      transform: translateX(-50%) translateY(-110%);
-      opacity: 0;
     }
 
     /* ── Subheadline ── */
@@ -158,54 +152,6 @@
 
     .blur-word.revealed {
       animation: blurFadeIn 0.55s ease forwards;
-    }
-
-    /* ── CTA Buttons ── */
-    .cta-row {
-      display: flex;
-      gap: 16px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 32px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-    }
-
-    .btn:hover { transform: translateY(-2px); }
-    .btn:active { transform: translateY(0); }
-
-    /* Sign Up — solid gradient fill */
-    .btn-signup {
-      background: linear-gradient(135deg, #2979FF 0%, #3D5AFE 100%);
-      color: #fff;
-      border: none;
-      box-shadow: 0 4px 24px rgba(41, 121, 255, 0.35);
-    }
-    .btn-signup:hover { box-shadow: 0 8px 32px rgba(41, 121, 255, 0.5); }
-
-    /* Login — ghost / outline style */
-    .btn-login {
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.85);
-      border: 1px solid rgba(255,255,255,0.18);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .btn-login:hover {
-      background: rgba(255,255,255,0.11);
-      border-color: rgba(255,255,255,0.3);
     }
 
     /* ── Footer ── */
@@ -281,7 +227,7 @@
 
     <!-- Nav: logo top-right -->
     <nav>
-      <a href="https://saassuite.com" target="_blank" rel="noopener">
+      <a href="https://app.saassuite.com" target="_blank" rel="noopener">
         <img id="nav-logo" src="https://assets.cdn.filesafe.space/T69cI1milcirIORef4Ib/media/69bd8c030e1bdb7864856aac.png" alt="SaaS Suite" />
       </a>
     </nav>
@@ -298,16 +244,7 @@
         </div>
       </h1>
 
-      <p class="sub" id="sub-text">Join our waitlist and get access to our on demand training.</p>
-
-      <div class="cta-row" id="cta-row">
-        <a class="btn btn-signup" href="https://app.saassuite.com/" target="_blank" rel="noopener">
-          Sign Up
-        </a>
-        <a class="btn btn-login" href="https://app.saassuite.com/dashboard" target="_blank" rel="noopener">
-          Login
-        </a>
-      </div>
+      <p class="sub" id="sub-text">Get exclusive access to everything you need to build, market, and sell, your SaaS.</p>
 
     </main>
 
@@ -327,34 +264,51 @@
 
   <script>
     /* ── Animated gradient background ── */
-    (function () {
-      const el = document.getElementById('bg-canvas');
-      const gradientColors = [
-        '#0A0A0A', '#2979FF', '#FF80AB', '#FF6D00', '#FFD600', '#00E676', '#3D5AFE'
-      ];
-      const gradientStops = [35, 50, 60, 70, 80, 90, 100];
-      let width = 125;
+(function() {
+  var el = document.getElementById('bg-canvas');
+  if (!el) return;
 
-      function animate() {
-        const mobile = window.innerWidth < 640;
-        const activeStops = mobile
-          ? gradientStops.map(s => Math.round(s * 0.45))
-          : gradientStops;
-        const stopsStr = activeStops.map((s, i) => `${gradientColors[i]} ${s}%`).join(', ');
-        const rx = mobile ? width * 1.4 : width;
-        const ry = mobile ? width * 2.0 : width;
-        el.style.background = `radial-gradient(${rx}% ${ry}% at 50% 20%, ${stopsStr})`;
-        requestAnimationFrame(animate);
-      }
+  var colors = ["#0A0A0A", "#2979FF", "#FF80AB", "#FF6D00", "#FFD600", "#00E676", "#3D5AFE"];
+  var stops  = [35, 50, 60, 70, 80, 90, 100];
+  var speed  = 0.015;
+  var startW = 125;
+  var range  = 8;
 
-      requestAnimationFrame(animate);
+  var width = startW;
+  var dir   = 1;
 
-      // Fade in after first paint
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => { el.classList.add('visible'); });
-      });
-    })();
+  function buildGradient(w) {
+    var mobile = window.innerWidth < 640;
+    var rx = mobile ? w * 1.1 : w;
+    var ry = mobile ? w * 1.1 : w;
 
+    var stopsStr = stops.map(function(stop, i) {
+      return colors[i] + ' ' + stop + '%';
+    }).join(', ');
+
+    return 'radial-gradient(' + rx + '% ' + ry + '% at 50% 20%, ' + stopsStr + ')';
+  }
+
+  function paint() {
+    el.style.background = buildGradient(width);
+  }
+
+  function animate() {
+    if (width >= startW + range) dir = -1;
+    if (width <= startW - range) dir = 1;
+    width += dir * speed;
+    paint();
+    requestAnimationFrame(animate);
+  }
+
+  paint();
+
+  setTimeout(function() {
+    el.classList.add('visible');
+  }, 80);
+
+  requestAnimationFrame(animate);
+})();
     /* ── Word-by-word blur-fade animation ── */
     (function () {
       // Split an element's text into individual .blur-word spans
@@ -399,20 +353,9 @@
       revealWords(splitToWords(document.getElementById('footer-copy')), 1400, 60);
       revealWords(splitToWords(document.getElementById('footer-status')), 1600, 80);
       revealWords(splitToWords(document.getElementById('footer-powered')), 1750, 80);
-
-      // ── CTA buttons: blur-fade in after sub text ──
-      setTimeout(() => {
-        document.getElementById('cta-row').querySelectorAll('.btn').forEach((btn, i) => {
-          btn.style.opacity = '0';
-          setTimeout(() => {
-            btn.style.transition = 'opacity 0.5s ease, transform 0.18s ease, box-shadow 0.18s ease';
-            btn.style.opacity = '1';
-          }, i * 120);
-        });
-      }, 1100);
     })();
 
-    /* ── Rolling word swapper ── */
+    /* ── Fade word swapper ── */
     (function () {
       const words = ['ideating...', 'developing...', 'launching...', 'monetizing...'];
       const wrap = document.getElementById('wordWrap');
@@ -430,13 +373,8 @@
       setTimeout(() => {
         els[current].classList.add('active');
         setInterval(() => {
-          const prev = current;
-          els[prev].classList.remove('active');
-          els[prev].classList.add('exited');
+          els[current].classList.remove('active');
           current = (current + 1) % words.length;
-          // Reset word to bottom if it previously exited off the top
-          els[current].classList.remove('exited');
-          void els[current].offsetWidth; // force reflow so transition fires
           els[current].classList.add('active');
         }, 2000);
       }, 950);
